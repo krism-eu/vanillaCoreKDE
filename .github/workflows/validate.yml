@@ -20,4 +20,9 @@ jobs:
           test -s Containerfile
           grep -q 'ghcr.io/vanilla-os/core:latest' Containerfile
           grep -q 'kde-standard' Containerfile
+          test -s includes.container/usr/share/abroot/abroot.json
+          python3 -m json.tool includes.container/usr/share/abroot/abroot.json >/dev/null
+          grep -q '"name": "changed_automatically_by_vib"' includes.container/usr/share/abroot/abroot.json
+          grep -q '"iPkgMngPre": "lpkg --unlock"' includes.container/usr/share/abroot/abroot.json
+          ! grep -qE 'rm[^\n]*[[:space:]]/sources([[:space:]]|$)' recipe.yml
           ! grep -R --line-number 'polkit.Result.YES' recipe.yml modules includes.container
