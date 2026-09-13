@@ -4,8 +4,8 @@ commands:
   - IMAGE_NAME="$(cat /image-info/image-name)"
   - test -n "$IMAGE_NAME"
   - test -f /usr/share/abroot/abroot.json
-  - grep -q '"name": "changed_automatically_by_vib"' /usr/share/abroot/abroot.json
+  - grep -q changed_automatically_by_vib /usr/share/abroot/abroot.json
   - echo custom image name "$IMAGE_NAME"
   - sed -i "s|changed_automatically_by_vib|$IMAGE_NAME|g" /usr/share/abroot/abroot.json
-  - grep -q "\"name\": \"$IMAGE_NAME\"" /usr/share/abroot/abroot.json
+  - grep -Fq "$IMAGE_NAME" /usr/share/abroot/abroot.json
   - rm -rf /image-info
