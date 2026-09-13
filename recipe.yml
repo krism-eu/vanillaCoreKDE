@@ -35,7 +35,6 @@ stages:
       - name: init-setup
         type: shell
         commands:
-          - lpkg --unlock
           - apt-get update
 
       - name: vanilla-tools
