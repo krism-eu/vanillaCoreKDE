@@ -4,7 +4,6 @@ sources:
   - packages:
       - kde-standard
       - plasma-workspace
-      - plasma-workspace-wayland
       - kwin-wayland
       - sddm
       - sddm-theme-breeze
@@ -19,7 +18,6 @@ sources:
       - konsole
       - kate
       - okular
-      - spectacle
       - ark
       - gwenview
       - kcalc
