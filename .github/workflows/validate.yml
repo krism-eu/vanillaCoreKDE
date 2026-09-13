@@ -26,6 +26,19 @@ jobs:
           ! grep -q 'APT::Install-Recommends "1"' recipe.yml
           ! grep -qE '(^|[[:space:]-])(kde-standard|kde-full)([[:space:]]|$)' modules/10-kde-packages.yml
 
+          # Wayland-only login manager: greetd/tuigreet, never SDDM/X.Org.
+          grep -qE '^[[:space:]]*- greetd$' modules/10-kde-packages.yml
+          grep -qE '^[[:space:]]*- tuigreet$' modules/10-kde-packages.yml
+          ! grep -qE '^[[:space:]]*- sddm($|[[:space:]])' modules/10-kde-packages.yml
+          ! grep -qE '^[[:space:]]*- sddm-theme-' modules/10-kde-packages.yml
+          test -s includes.container/etc/greetd/config.toml
+          grep -q 'user = "_greetd"' includes.container/etc/greetd/config.toml
+          grep -q '/usr/share/wayland-sessions' includes.container/etc/greetd/config.toml
+          ! grep -q '/usr/share/xsessions' includes.container/etc/greetd/config.toml
+          test ! -e includes.container/etc/sddm.conf.d/10-kde.conf
+          grep -q 'EXTRA_XORG=' modules/15-hardware-prune.yml
+          grep -q 'xserver-xorg' modules/15-hardware-prune.yml
+
           # Targeted graphics/firmware only: AMD Vega + MediaTek.
           grep -qE '^[[:space:]]*- mesa-vulkan-drivers$' modules/10-kde-packages.yml
           grep -qE '^[[:space:]]*- firmware-amd-graphics$' modules/10-kde-packages.yml
