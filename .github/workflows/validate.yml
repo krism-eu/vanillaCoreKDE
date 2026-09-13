@@ -20,4 +20,4 @@ jobs:
           test -s Containerfile
           grep -q 'ghcr.io/vanilla-os/core:latest' Containerfile
           grep -q 'kde-standard' Containerfile
-          ! grep -R --line-number 'polkit.Result.YES' .
+          ! grep -R --line-number 'polkit.Result.YES' recipe.yml modules includes.container
