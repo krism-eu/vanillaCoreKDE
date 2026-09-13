@@ -43,6 +43,19 @@ jobs:
           grep -q 'xserver-xorg-video-amdgpu' modules/15-hardware-prune.yml
           grep -q 'xserver-xorg-input-libinput' modules/15-hardware-prune.yml
 
+          # Vanilla installer compatibility: the installer copies FirstSetup.desktop
+          # into the temporary `vanilla` user's autostart and KDE needs SDDM autologin.
+          grep -q 'modules/12-vanilla-first-setup.yml' recipe.yml
+          grep -q 'Vanilla-KDE/first-setup/releases/download/v3.4.1/vanilla-first-setup.deb' modules/12-vanilla-first-setup.yml
+          grep -q '745a9bb0af8a163cae0d37018326ec05a7bbf801101e3000f6480dfad959c12b' modules/12-vanilla-first-setup.yml
+          grep -q 'org.vanillaos.FirstSetup.desktop' modules/12-vanilla-first-setup.yml
+          test -s includes.container/etc/sddm.conf.d/autologin.conf
+          grep -q '^User=vanilla$' includes.container/etc/sddm.conf.d/autologin.conf
+          grep -q '^Session=plasma$' includes.container/etc/sddm.conf.d/autologin.conf
+          test -s includes.container/usr/lib/systemd/system/clear-first-setup-steps.service
+          grep -q 'org.vanillaos.FirstSetup.commands' includes.container/usr/lib/systemd/system/clear-first-setup-steps.service
+          grep -q '/sysconf/sddm.conf.d/autologin.conf' recipe.yml
+
           # Targeted graphics/firmware only: AMD Vega + MediaTek.
           grep -qE '^[[:space:]]*- mesa-vulkan-drivers$' modules/10-kde-packages.yml
           grep -qE '^[[:space:]]*- firmware-amd-graphics$' modules/10-kde-packages.yml

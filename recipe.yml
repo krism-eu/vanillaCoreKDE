@@ -53,6 +53,7 @@ stages:
         type: includes
         includes:
           - modules/10-kde-packages.yml
+          - modules/12-vanilla-first-setup.yml
           - modules/15-hardware-prune.yml
           - modules/20-kde-setup.yml
           - modules/30-locale.yml
@@ -67,6 +68,10 @@ stages:
         commands:
           - apt-get autoremove --purge -y
           - for pkg in firmware-amd-graphics firmware-mediatek amd64-microcode libgl1-mesa-dri mesa-vulkan-drivers gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-libav sddm sddm-theme-breeze xserver-xorg xserver-xorg-core xserver-xorg-input-libinput xserver-xorg-video-amdgpu dbus-x11 rsync; do status="$(dpkg-query -W -f='${db:Status-Status}' "$pkg" 2>/dev/null || true)"; test "$status" = installed || { echo "required package missing before lock - $pkg" >&2; exit 1; }; done
+          - test -f /usr/share/applications/org.vanillaos.FirstSetup.desktop || { echo "Vanilla First Setup desktop file missing before lock" >&2; exit 1; }
+          - test -f /etc/sddm.conf.d/autologin.conf
+          - grep -q '^User=vanilla$' /etc/sddm.conf.d/autologin.conf
+          - grep -q '^Session=plasma$' /etc/sddm.conf.d/autologin.conf
           - dpkg-query -W -f='${Package} ${db:Status-Status}\n' > /tmp/final-package-status
           - while read -r pkg status; do test "$status" = installed || continue; case "$pkg" in firmware-amd-graphics|firmware-mediatek|xserver-xorg|xserver-xorg-core|xserver-xorg-input-libinput|xserver-xorg-video-amdgpu|dbus-x11) ;; firmware-*|intel-microcode|xserver-xorg*|greetd|tuigreet) echo "unexpected hardware/login package before lock - $pkg" >&2; exit 1 ;; esac; done < /tmp/final-package-status
           - rm -f /tmp/final-package-status
@@ -76,4 +81,5 @@ stages:
           - rm -f /sysconf/resolv.conf
           - test -f /sysconf/default/locale
           - test -f /sysconf/sddm.conf.d/10-kde.conf
+          - test -f /sysconf/sddm.conf.d/autologin.conf
           - rm -rf /var/lib/apt/lists/*

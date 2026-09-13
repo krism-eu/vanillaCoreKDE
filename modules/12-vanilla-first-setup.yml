@@ -1,0 +1,11 @@
+name: vanilla-first-setup
+type: shell
+sources:
+  - type: file
+    url: https://github.com/Vanilla-KDE/first-setup/releases/download/v3.4.1/vanilla-first-setup.deb
+    checksum: 745a9bb0af8a163cae0d37018326ec05a7bbf801101e3000f6480dfad959c12b
+commands:
+  - apt-get install -y /sources/vanilla-first-setup/vanilla-first-setup/vanilla-first-setup.deb
+  - mkdir -p /etc/systemd/system/local-fs.target.wants/
+  - ln -sf /usr/lib/systemd/system/clear-first-setup-steps.service /etc/systemd/system/local-fs.target.wants/clear-first-setup-steps.service
+  - test -f /usr/share/applications/org.vanillaos.FirstSetup.desktop

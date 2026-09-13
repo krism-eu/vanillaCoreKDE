@@ -116,13 +116,25 @@ jobs:
               test -f /usr/lib/xorg/modules/drivers/amdgpu_drv.so
               grep -q "^DisplayServer=x11$" /etc/sddm.conf.d/10-kde.conf
 
+              # Vanilla installer compatibility: it creates user `vanilla`, then
+              # copies FirstSetup.desktop to that users autostart. KDE must autologin it.
+              test -f /usr/share/applications/org.vanillaos.FirstSetup.desktop
+              test -f /etc/sddm.conf.d/autologin.conf
+              grep -q "^User=vanilla$" /etc/sddm.conf.d/autologin.conf
+              grep -q "^Session=plasma$" /etc/sddm.conf.d/autologin.conf
+              test -f /usr/lib/systemd/system/clear-first-setup-steps.service
+              test -L /etc/systemd/system/local-fs.target.wants/clear-first-setup-steps.service
+
               # Vanilla OS persistent system configuration must mirror final /etc.
               test -d /sysconf
               test -f /sysconf/default/locale
               test -f /sysconf/sddm.conf.d/10-kde.conf
+              test -f /sysconf/sddm.conf.d/autologin.conf
               test ! -e /sysconf/resolv.conf
               grep -q "^LANG=it_IT.UTF-8$" /sysconf/default/locale
               grep -q "^DisplayServer=x11$" /sysconf/sddm.conf.d/10-kde.conf
+              grep -q "^User=vanilla$" /sysconf/sddm.conf.d/autologin.conf
+              grep -q "^Session=plasma$" /sysconf/sddm.conf.d/autologin.conf
 
               grep -q "\"name\": \"$EXPECTED_NAME\"" /usr/share/abroot/abroot.json
               grep -q "^LANG=it_IT.UTF-8$" /etc/default/locale
