@@ -41,7 +41,9 @@ stages:
         type: includes
         includes:
           - modules/10-kde-packages.yml
+          - modules/15-hardware-prune.yml
           - modules/20-kde-setup.yml
+          - modules/30-locale.yml
 
       - name: set-image-name-abroot
         type: includes
