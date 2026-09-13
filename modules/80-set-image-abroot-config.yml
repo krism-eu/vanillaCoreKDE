@@ -2,7 +2,10 @@ name: add-image-name
 type: shell
 commands:
   - IMAGE_NAME="$(cat /image-info/image-name)"
+  - test -n "$IMAGE_NAME"
+  - test -f /usr/share/abroot/abroot.json
+  - grep -q '"name": "changed_automatically_by_vib"' /usr/share/abroot/abroot.json
   - echo custom image name "$IMAGE_NAME"
-  - IMAGE_NAME_ESCAPED="$(echo $IMAGE_NAME | sed 's/\//\\\//g')"
-  - sed -i "s/changed_automatically_by_vib/$IMAGE_NAME_ESCAPED/g" /usr/share/abroot/abroot.json
+  - sed -i "s|changed_automatically_by_vib|$IMAGE_NAME|g" /usr/share/abroot/abroot.json
+  - grep -q "\"name\": \"$IMAGE_NAME\"" /usr/share/abroot/abroot.json
   - rm -rf /image-info

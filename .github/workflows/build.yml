@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: build-${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
@@ -78,12 +78,27 @@ jobs:
           context: .
           file: Containerfile
           platforms: linux/amd64
+          pull: true
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
           provenance: false
+
+      - name: Smoke test pushed image
+        if: github.event_name != 'pull_request'
+        shell: bash
+        run: |
+          image="${IMAGE_URL}@${{ steps.build.outputs.digest }}"
+          expected_name="${IMAGE_URL#ghcr.io/}"
+          docker pull "$image"
+          docker run --rm --entrypoint /bin/sh "$image" -c "
+            command -v plasmashell >/dev/null &&
+            command -v sddm >/dev/null &&
+            command -v flatpak >/dev/null &&
+            grep -q '\"name\": \"${expected_name}\"' /usr/share/abroot/abroot.json
+          "
 
       - name: Attest image
         if: github.event_name != 'pull_request'

@@ -19,7 +19,13 @@ jobs:
         run: |
           test -s Containerfile
           grep -q 'ghcr.io/vanilla-os/core:latest' Containerfile
-          grep -q 'kde-standard' Containerfile
+          grep -q 'plasma-desktop' Containerfile
+          grep -q 'APT::Install-Recommends "0"' recipe.yml
+          grep -q 'APT::Install-Suggests "0"' recipe.yml
+          ! grep -q 'APT::Install-Recommends "1"' recipe.yml
+          ! grep -qE '(^|[[:space:]-])(kde-standard|kde-full)([[:space:]]|$)' modules/10-kde-packages.yml
+          ! grep -qE '(^|[[:space:]-])(mesa-utils|mesa-vulkan-drivers)([[:space:]]|$)' modules/10-kde-packages.yml
+          ! grep -qE '(^|[[:space:]-])firmware-' modules/10-kde-packages.yml
           test -s includes.container/usr/share/abroot/abroot.json
           python3 -m json.tool includes.container/usr/share/abroot/abroot.json >/dev/null
           grep -q '"name": "changed_automatically_by_vib"' includes.container/usr/share/abroot/abroot.json

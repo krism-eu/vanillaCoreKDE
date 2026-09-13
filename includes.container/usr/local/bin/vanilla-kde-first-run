@@ -6,6 +6,5 @@ marker="${XDG_STATE_HOME:-$HOME/.local/state}/vanilla-core-kde/first-run.done"
 mkdir -p "$(dirname "$marker")"
 
 xdg-user-dirs-update >/dev/null 2>&1 || true
-flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo >/dev/null 2>&1 || true
 
 touch "$marker"

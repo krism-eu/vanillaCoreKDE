@@ -10,14 +10,14 @@ stages:
     labels:
       maintainer: krism-eu
       org.opencontainers.image.title: Vanilla Core KDE
-      org.opencontainers.image.description: Vanilla OS Core with KDE Plasma
+      org.opencontainers.image.description: Minimal Vanilla OS Core image with KDE Plasma
       org.opencontainers.image.source: https://github.com/krism-eu/vanillaCoreKDE
     args:
       DEBIAN_FRONTEND: noninteractive
 
     runs:
       commands:
-        - echo 'APT::Install-Recommends "1";' > /etc/apt/apt.conf.d/01norecommends
+        - printf '%s\n' 'APT::Install-Recommends "0";' 'APT::Install-Suggests "0";' > /etc/apt/apt.conf.d/01norecommends
 
     modules:
       - name: init-setup

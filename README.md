@@ -3,7 +3,7 @@
 [![Build OCI image](https://github.com/krism-eu/vanillaCoreKDE/actions/workflows/build.yml/badge.svg)](https://github.com/krism-eu/vanillaCoreKDE/actions/workflows/build.yml)
 [![Validate recipe](https://github.com/krism-eu/vanillaCoreKDE/actions/workflows/validate.yml/badge.svg)](https://github.com/krism-eu/vanillaCoreKDE/actions/workflows/validate.yml)
 
-Experimental Vanilla OS image built from `ghcr.io/vanilla-os/core:latest` with KDE Plasma and SDDM.
+Experimental minimal Vanilla OS image built from `ghcr.io/vanilla-os/core:latest` with KDE Plasma and SDDM.
 
 The repository follows the current Vanilla OS VIB image layout: `recipe.yml` is the source of truth, VIB generates `Containerfile`, and GitHub Actions builds/publishes the OCI image to GHCR.
 
@@ -16,12 +16,14 @@ ghcr.io/krism-eu/vanillacorekde:latest
 ## What is included
 
 - Vanilla OS Core as the immutable base
-- KDE Plasma / KDE Standard applications
+- Explicit minimal KDE Plasma desktop set; no `kde-standard` or `kde-full` metapackages
+- APT Recommends and Suggests disabled; wanted functionality is listed explicitly
 - SDDM with Wayland greeter
-- NetworkManager, Bluetooth, PipeWire, CUPS
-- Flatpak + Flathub
+- NetworkManager, Bluetooth, PipeWire and CUPS
+- Flatpak + one system-wide Flathub remote
 - KDE portal integration
 - ABRoot image-name wiring for updates from this custom GHCR image
+- no extra GPU driver/firmware packages added by this image recipe
 - conservative KDE defaults copied through `includes.container`
 
 The intentionally unsafe global Polkit bypass and aggressive sysctl/limits overrides from the original prototype were removed.
@@ -38,12 +40,12 @@ Equivalent manual commands:
 
 ```bash
 vib build recipe.yml
-podman build -f Containerfile -t localhost/vanillacorekde:dev .
+podman build --pull=always -f Containerfile -t localhost/vanillacorekde:dev .
 ```
 
 ## CI / publishing
 
-A push to `main` builds `linux/amd64` and publishes tags to GHCR. Pull requests build the image without pushing it.
+A push to `main` builds `linux/amd64` and publishes tags to GHCR. Pull requests build the image without pushing it. A weekly scheduled rebuild follows changes in `ghcr.io/vanilla-os/core:latest` and republishes the ABRoot `main` tag.
 
 The build is based on the official `Vanilla-OS/custom-image` VIB 1.0.7 pattern.
 

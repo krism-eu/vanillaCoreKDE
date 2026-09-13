@@ -2,9 +2,13 @@ name: install-kde-packages
 type: apt
 sources:
   - packages:
-      - kde-standard
+      # Keep the desktop set explicit: no kde-standard/kde-full metapackages.
+      # Recommends are disabled globally, so functionality we want is listed here.
+      - plasma-desktop
       - plasma-workspace
       - kwin-wayland
+      - systemsettings
+      - kscreen
       - sddm
       - sddm-theme-breeze
       - breeze-icon-theme
@@ -13,8 +17,8 @@ sources:
       - plasma-pa
       - powerdevil
       - bluedevil
-      - kdeconnect
       - dolphin
+      - kio-extras
       - konsole
       - kate
       - okular
@@ -32,12 +36,10 @@ sources:
       - pipewire-pulse
       - wireplumber
       - cups
+      - udisks2
+      - upower
       - xdg-user-dirs
       - xdg-utils
-      - fonts-noto
-      - fonts-noto-cjk
+      - fonts-noto-core
       - fonts-noto-mono
       - fonts-noto-color-emoji
-      - fonts-liberation
-      - mesa-vulkan-drivers
-      - mesa-utils
