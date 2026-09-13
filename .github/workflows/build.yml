@@ -10,6 +10,10 @@ on:
     - cron: '23 3 * * 1'
   workflow_dispatch:
 
+concurrency:
+  group: build-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
@@ -64,6 +68,7 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=sha
+            type=raw,value=main,enable=${{ github.event_name == 'schedule' }}
             type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Build and push
