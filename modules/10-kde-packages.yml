@@ -9,8 +9,11 @@ sources:
       - systemsettings
       - kscreen
       - polkit-kde-agent-1
-      - sddm
-      - sddm-theme-breeze
+
+      # Minimal login manager without an X.Org server dependency.
+      - greetd
+      - tuigreet
+
       - breeze-icon-theme
       - breeze-cursor-theme
       - breeze-gtk-theme
