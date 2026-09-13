@@ -98,23 +98,32 @@ jobs:
             --entrypoint /bin/sh "$image" -c '
               set -eu
 
-              for cmd in plasmashell grep lpkg; do
+              for cmd in plasmashell sddm dbus-launch grep lpkg; do
                 command -v "$cmd" >/dev/null || {
                   echo "missing required runtime command: $cmd" >&2
                   exit 1
                 }
               done
 
-              test -x /usr/sbin/greetd
-              test -x /usr/bin/tuigreet
-              test -f /etc/greetd/config.toml
-              grep -q "/usr/share/wayland-sessions" /etc/greetd/config.toml
               test -f /usr/share/wayland-sessions/plasma.desktop
               test -x /usr/bin/startplasma-wayland
               test -x /usr/bin/kwin_wayland
               test ! -e /usr/share/xsessions/plasmax11.desktop
-              ! command -v sddm >/dev/null 2>&1
-              ! dpkg-query -W -f="\${Package} \${db:Status-Status}\n" 2>/dev/null | grep -E "^xserver-xorg[^ ]* installed$|^dbus-x11 installed$"
+
+              # SDDM greeter safety net: X.Org is deliberately minimal and AMD-only.
+              test -x /usr/lib/xorg/Xorg
+              test -f /usr/lib/xorg/modules/input/libinput_drv.so
+              test -f /usr/lib/xorg/modules/drivers/amdgpu_drv.so
+              grep -q "^DisplayServer=x11$" /etc/sddm.conf.d/10-kde.conf
+
+              # Vanilla OS persistent system configuration must mirror final /etc.
+              test -d /sysconf
+              test -f /sysconf/default/locale
+              test -f /sysconf/sddm.conf.d/10-kde.conf
+              test ! -e /sysconf/resolv.conf
+              grep -q "^LANG=it_IT.UTF-8$" /sysconf/default/locale
+              grep -q "^DisplayServer=x11$" /sysconf/sddm.conf.d/10-kde.conf
+
               grep -q "\"name\": \"$EXPECTED_NAME\"" /usr/share/abroot/abroot.json
               grep -q "^LANG=it_IT.UTF-8$" /etc/default/locale
             '

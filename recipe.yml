@@ -62,14 +62,18 @@ stages:
         includes:
           - modules/80-set-image-abroot-config.yml
 
-      - name: cleanup
+      - name: cleanup-and-sysconf-setup
         type: shell
         commands:
           - apt-get autoremove --purge -y
-          - for pkg in firmware-amd-graphics firmware-mediatek amd64-microcode libgl1-mesa-dri mesa-vulkan-drivers gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-libav greetd tuigreet; do status="$(dpkg-query -W -f='${db:Status-Status}' "$pkg" 2>/dev/null || true)"; test "$status" = installed || { echo "required package missing before lock - $pkg" >&2; exit 1; }; done
+          - for pkg in firmware-amd-graphics firmware-mediatek amd64-microcode libgl1-mesa-dri mesa-vulkan-drivers gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-libav sddm sddm-theme-breeze xserver-xorg xserver-xorg-core xserver-xorg-input-libinput xserver-xorg-video-amdgpu dbus-x11 rsync; do status="$(dpkg-query -W -f='${db:Status-Status}' "$pkg" 2>/dev/null || true)"; test "$status" = installed || { echo "required package missing before lock - $pkg" >&2; exit 1; }; done
           - dpkg-query -W -f='${Package} ${db:Status-Status}\n' > /tmp/final-package-status
-          - while read -r pkg status; do test "$status" = installed || continue; case "$pkg" in firmware-amd-graphics|firmware-mediatek) ;; firmware-*|intel-microcode|xserver-xorg*|dbus-x11|sddm|sddm-theme-*) echo "unexpected hardware/X.Org/login package before lock - $pkg" >&2; exit 1 ;; esac; done < /tmp/final-package-status
+          - while read -r pkg status; do test "$status" = installed || continue; case "$pkg" in firmware-amd-graphics|firmware-mediatek|xserver-xorg|xserver-xorg-core|xserver-xorg-input-libinput|xserver-xorg-video-amdgpu|dbus-x11) ;; firmware-*|intel-microcode|xserver-xorg*|greetd|tuigreet) echo "unexpected hardware/login package before lock - $pkg" >&2; exit 1 ;; esac; done < /tmp/final-package-status
           - rm -f /tmp/final-package-status
           - apt-get clean
           - lpkg --lock
+          - rsync -a /etc/ /sysconf/
+          - rm -f /sysconf/resolv.conf
+          - test -f /sysconf/default/locale
+          - test -f /sysconf/sddm.conf.d/10-kde.conf
           - rm -rf /var/lib/apt/lists/*

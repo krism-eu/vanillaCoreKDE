@@ -2,7 +2,7 @@ name: kde-packages
 type: apt
 sources:
   - packages:
-      # Plasma 6 / Wayland only.
+      # Plasma 6: user session is Wayland-only.
       - plasma-desktop
       - plasma-workspace
       - kwin-wayland
@@ -10,9 +10,15 @@ sources:
       - kscreen
       - polkit-kde-agent-1
 
-      # Minimal login manager without an X.Org server dependency.
-      - greetd
-      - tuigreet
+      # SDDM uses a deliberately minimal X11 greeter safety stack. Plasma X11
+      # itself is not exposed: only the greeter gets X.Org, with AMD + libinput.
+      - xserver-xorg-core
+      - xserver-xorg-input-libinput
+      - xserver-xorg-video-amdgpu
+      - xserver-xorg
+      - dbus-x11
+      - sddm
+      - sddm-theme-breeze
 
       - breeze-icon-theme
       - breeze-cursor-theme
@@ -52,6 +58,9 @@ sources:
       - firmware-amd-graphics
       - firmware-mediatek
       - amd64-microcode
+
+      # Required to persist the final /etc tree into Vanilla OS /sysconf.
+      - rsync
 
       # Minimal base font.
       - fonts-dejavu-core

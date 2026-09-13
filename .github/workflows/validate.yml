@@ -26,33 +26,47 @@ jobs:
           ! grep -q 'APT::Install-Recommends "1"' recipe.yml
           ! grep -qE '(^|[[:space:]-])(kde-standard|kde-full)([[:space:]]|$)' modules/10-kde-packages.yml
 
-          # Wayland-only login manager: greetd/tuigreet, never SDDM/X.Org.
-          grep -qE '^[[:space:]]*- greetd$' modules/10-kde-packages.yml
-          grep -qE '^[[:space:]]*- tuigreet$' modules/10-kde-packages.yml
-          ! grep -qE '^[[:space:]]*- sddm($|[[:space:]])' modules/10-kde-packages.yml
-          ! grep -qE '^[[:space:]]*- sddm-theme-' modules/10-kde-packages.yml
-          test -s includes.container/etc/greetd/config.toml
-          grep -q 'user = "_greetd"' includes.container/etc/greetd/config.toml
-          grep -q '/usr/share/wayland-sessions' includes.container/etc/greetd/config.toml
-          ! grep -q '/usr/share/xsessions' includes.container/etc/greetd/config.toml
-          test ! -e includes.container/etc/sddm.conf.d/10-kde.conf
+          # Plasma is Wayland-only for users; SDDM deliberately keeps a minimal
+          # AMD/libinput X11 greeter as the recovery-safe display manager path.
+          grep -qE '^[[:space:]]*- sddm$' modules/10-kde-packages.yml
+          grep -qE '^[[:space:]]*- sddm-theme-breeze$' modules/10-kde-packages.yml
+          grep -qE '^[[:space:]]*- xserver-xorg$' modules/10-kde-packages.yml
+          grep -qE '^[[:space:]]*- xserver-xorg-core$' modules/10-kde-packages.yml
+          grep -qE '^[[:space:]]*- xserver-xorg-input-libinput$' modules/10-kde-packages.yml
+          grep -qE '^[[:space:]]*- xserver-xorg-video-amdgpu$' modules/10-kde-packages.yml
+          grep -qE '^[[:space:]]*- dbus-x11$' modules/10-kde-packages.yml
+          ! grep -qE '^[[:space:]]*- (greetd|tuigreet)$' modules/10-kde-packages.yml
+          test -s includes.container/etc/sddm.conf.d/10-kde.conf
+          grep -q '^DisplayServer=x11$' includes.container/etc/sddm.conf.d/10-kde.conf
+          test ! -e includes.container/etc/greetd/config.toml
           grep -q 'EXTRA_XORG=' modules/15-hardware-prune.yml
-          grep -q 'xserver-xorg' modules/15-hardware-prune.yml
+          grep -q 'xserver-xorg-video-amdgpu' modules/15-hardware-prune.yml
+          grep -q 'xserver-xorg-input-libinput' modules/15-hardware-prune.yml
 
           # Targeted graphics/firmware only: AMD Vega + MediaTek.
           grep -qE '^[[:space:]]*- mesa-vulkan-drivers$' modules/10-kde-packages.yml
           grep -qE '^[[:space:]]*- firmware-amd-graphics$' modules/10-kde-packages.yml
           grep -qE '^[[:space:]]*- firmware-mediatek$' modules/10-kde-packages.yml
           grep -qE '^[[:space:]]*- amd64-microcode$' modules/10-kde-packages.yml
-          ! grep -qE '^[[:space:]]*- (xserver-xorg|dbus-x11)' modules/10-kde-packages.yml
           ! grep -qE '^[[:space:]]*- firmware-(iwlwifi|realtek|atheros|b43|brcm80211|sof|intel|nvidia|linux)' modules/10-kde-packages.yml
           ! grep -qE '^[[:space:]]*- intel-microcode$' modules/10-kde-packages.yml
+          ! grep -qE '^[[:space:]]*- xserver-xorg-(video|input)-(ati|radeon|intel|nouveau|nvidia|vmware|vesa|fbdev|wacom|synaptics|evdev)$' modules/10-kde-packages.yml
 
           # Minimal multimedia: no broad bad/ugly plugin sets or ffmpeg CLI package.
           grep -qE '^[[:space:]]*- gstreamer1.0-plugins-base$' modules/10-kde-packages.yml
           grep -qE '^[[:space:]]*- gstreamer1.0-plugins-good$' modules/10-kde-packages.yml
           grep -qE '^[[:space:]]*- gstreamer1.0-libav$' modules/10-kde-packages.yml
           ! grep -qE '^[[:space:]]*- (gstreamer1.0-plugins-bad|gstreamer1.0-plugins-ugly|ffmpeg)$' modules/10-kde-packages.yml
+
+          # /sysconf is essential on Vanilla OS: mirror the final /etc only after
+          # package cleanup and lpkg lock, then never persist resolv.conf.
+          grep -qE '^[[:space:]]*- rsync$' modules/10-kde-packages.yml
+          grep -q 'lpkg --lock' recipe.yml
+          grep -q 'rsync -a /etc/ /sysconf/' recipe.yml
+          grep -q 'rm -f /sysconf/resolv.conf' recipe.yml
+          lock_line="$(grep -n 'lpkg --lock' recipe.yml | tail -1 | cut -d: -f1)"
+          rsync_line="$(grep -n 'rsync -a /etc/ /sysconf/' recipe.yml | tail -1 | cut -d: -f1)"
+          test "$lock_line" -lt "$rsync_line"
 
           # VIB 1.1.0 cleanup is used, while APT indexes are removed only at the end.
           grep -q '^[[:space:]]*cleanup:$' recipe.yml

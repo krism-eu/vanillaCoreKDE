@@ -6,8 +6,8 @@ commands:
   # base image adds in future releases.
   - EXTRA_FIRMWARE="$(dpkg-query -W -f='${Package} ${db:Status-Status}\n' | awk '$2 == "installed" && $1 ~ /^firmware-/ && $1 != "firmware-amd-graphics" && $1 != "firmware-mediatek" {print $1}')"; if [ -n "$EXTRA_FIRMWARE" ]; then printf '%s\n' "$EXTRA_FIRMWARE"; apt-get purge -y $EXTRA_FIRMWARE; fi
   - if [ "$(dpkg-query -W -f='${db:Status-Status}' intel-microcode 2>/dev/null || true)" = installed ]; then apt-get purge -y intel-microcode; fi
-  # This image is Plasma Wayland-only. Remove the complete X.Org server/DDX
-  # stack inherited from Core. X11 client libraries may remain when required by
-  # Qt/KDE, but no X server or X.Org hardware driver is allowed in the image.
-  - EXTRA_XORG="$(dpkg-query -W -f='${Package} ${db:Status-Status}\n' | awk '$2 == "installed" && ($1 ~ /^xserver-xorg/ || $1 == "dbus-x11") {print $1}')"; if [ -n "$EXTRA_XORG" ]; then printf '%s\n' "$EXTRA_XORG"; apt-get purge -y $EXTRA_XORG; fi
+
+  # Keep only the X.Org pieces needed by the SDDM emergency greeter on this AMD
+  # machine. Remove inherited vendor DDX/input drivers and legacy wrappers.
+  - EXTRA_XORG="$(dpkg-query -W -f='${Package} ${db:Status-Status}\n' | awk '$2 == "installed" && $1 ~ /^xserver-xorg/ && $1 != "xserver-xorg" && $1 != "xserver-xorg-core" && $1 != "xserver-xorg-input-libinput" && $1 != "xserver-xorg-video-amdgpu" {print $1}')"; if [ -n "$EXTRA_XORG" ]; then printf '%s\n' "$EXTRA_XORG"; apt-get purge -y $EXTRA_XORG; fi
   - apt-get autoremove --purge -y
