@@ -1,19 +1,23 @@
 name: configure-kde
 type: shell
 commands:
-  - systemctl enable sddm.service
+  - systemctl disable sddm.service 2>/dev/null || true
+  - systemctl enable greetd.service
   - systemctl set-default graphical.target
   - systemctl enable NetworkManager.service
   - systemctl enable bluetooth.service
   - systemctl enable cups.service
   - systemctl enable fstrim.timer
-  # plasma-workspace also ships an X11 user-session entry; hide it so the only
-  # selectable Plasma session is Wayland. No X.Org server stack is installed.
+  # plasma-workspace may ship an X11 user-session entry; remove it so the only
+  # selectable Plasma session is Wayland.
   - rm -f /usr/share/xsessions/plasmax11.desktop
   - chmod 0755 /usr/local/bin/vanilla-kde-first-run
   - mkdir -p /etc/skel/Desktop /etc/skel/Downloads /etc/skel/Documents /etc/skel/Music /etc/skel/Pictures /etc/skel/Videos
-  # Build-time smoke tests: never publish an image without a Plasma Wayland session.
+  # Build-time smoke tests: never publish an image without Plasma Wayland/greetd.
   - test -f /usr/share/wayland-sessions/plasma.desktop
   - test -x /usr/bin/startplasma-wayland
   - test -x /usr/bin/kwin_wayland
+  - test -x /usr/sbin/greetd
+  - test -x /usr/bin/tuigreet
+  - test -f /etc/greetd/config.toml
   - test ! -e /usr/share/xsessions/plasmax11.desktop
