@@ -1,5 +1,8 @@
 # Vanilla Core KDE
 
+[![Build OCI image](https://github.com/krism-eu/vanillaCoreKDE/actions/workflows/build.yml/badge.svg)](https://github.com/krism-eu/vanillaCoreKDE/actions/workflows/build.yml)
+[![Validate recipe](https://github.com/krism-eu/vanillaCoreKDE/actions/workflows/validate.yml/badge.svg)](https://github.com/krism-eu/vanillaCoreKDE/actions/workflows/validate.yml)
+
 Experimental Vanilla OS image built from `ghcr.io/vanilla-os/core:latest` with KDE Plasma and SDDM.
 
 The repository follows the current Vanilla OS VIB image layout: `recipe.yml` is the source of truth, VIB generates `Containerfile`, and GitHub Actions builds/publishes the OCI image to GHCR.
