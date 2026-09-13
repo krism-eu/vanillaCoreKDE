@@ -66,6 +66,10 @@ stages:
         type: shell
         commands:
           - apt-get autoremove --purge -y
+          - for pkg in firmware-amd-graphics firmware-mediatek amd64-microcode libgl1-mesa-dri mesa-vulkan-drivers gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-libav; do status="$(dpkg-query -W -f='${db:Status-Status}' "$pkg" 2>/dev/null || true)"; test "$status" = installed || { echo "required package missing before lock: $pkg" >&2; exit 1; }; done
+          - dpkg-query -W -f='${Package} ${db:Status-Status}\n' > /tmp/final-package-status
+          - while read -r pkg status; do test "$status" = installed || continue; case "$pkg" in firmware-amd-graphics|firmware-mediatek) ;; firmware-*|intel-microcode|xserver-xorg*|dbus-x11) echo "unexpected hardware/X.Org package before lock: $pkg" >&2; exit 1 ;; esac; done < /tmp/final-package-status
+          - rm -f /tmp/final-package-status
           - apt-get clean
           - lpkg --lock
           - rm -rf /var/lib/apt/lists/*

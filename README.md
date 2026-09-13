@@ -53,7 +53,7 @@ podman build --pull=always -f Containerfile -t localhost/vanillacorekde:dev .
 
 A push to `main` builds `linux/amd64` and publishes tags to GHCR. Pull requests build the image without pushing it. A weekly scheduled rebuild follows changes in `ghcr.io/vanilla-os/core:latest` and republishes the ABRoot `main` tag.
 
-Both validation and image generation use `vanilla-os/vib-gh-action@v1.1.0`. The pushed image is smoke-tested for the required AMD/MediaTek stack and the CI rejects any installed `firmware-*` package other than `firmware-amd-graphics` and `firmware-mediatek`, as well as Intel microcode and X.Org packages.
+Both validation and image generation use `vanilla-os/vib-gh-action@v1.1.0`. After the final APT autoremove and before `lpkg --lock`, the build verifies the required AMD/MediaTek, Mesa and codec packages and rejects any installed `firmware-*` package other than `firmware-amd-graphics` and `firmware-mediatek`, as well as Intel microcode and X.Org packages. The pushed, locked image is then smoke-tested only for runtime Plasma Wayland, SDDM, ABRoot and locale functionality.
 
 ## ISO status
 

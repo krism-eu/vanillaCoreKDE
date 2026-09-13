@@ -98,9 +98,9 @@ jobs:
             --entrypoint /bin/sh "$image" -c '
               set -eu
 
-              for cmd in plasmashell sddm dpkg-query grep; do
+              for cmd in plasmashell sddm grep lpkg; do
                 command -v "$cmd" >/dev/null || {
-                  echo "missing required command: $cmd" >&2
+                  echo "missing required runtime command: $cmd" >&2
                   exit 1
                 }
               done
@@ -108,31 +108,9 @@ jobs:
               test -f /usr/share/wayland-sessions/plasma.desktop
               test -x /usr/bin/startplasma-wayland
               test -x /usr/bin/kwin_wayland
+              test ! -e /usr/share/xsessions/plasmax11.desktop
               grep -q "\"name\": \"$EXPECTED_NAME\"" /usr/share/abroot/abroot.json
               grep -q "^LANG=it_IT.UTF-8$" /etc/default/locale
-
-              dpkg-query -W \
-                firmware-amd-graphics \
-                firmware-mediatek \
-                amd64-microcode \
-                libgl1-mesa-dri \
-                mesa-vulkan-drivers \
-                gstreamer1.0-plugins-base \
-                gstreamer1.0-plugins-good \
-                gstreamer1.0-libav >/dev/null
-
-              dpkg-query -W -f="\${binary:Package} \${Status}\n" 2>/dev/null |
-              while read -r pkg want error state; do
-                [ "$want $error $state" = "install ok installed" ] || continue
-                case "$pkg" in
-                  firmware-amd-graphics|firmware-mediatek)
-                    ;;
-                  firmware-*|intel-microcode|xserver-xorg*|dbus-x11)
-                    echo "unexpected hardware/X.Org package installed: $pkg" >&2
-                    exit 1
-                    ;;
-                esac
-              done
             '
 
       - name: Attest image
