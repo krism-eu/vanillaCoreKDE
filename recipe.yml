@@ -27,14 +27,14 @@ stages:
 
       - name: vanilla-tools
         type: shell
-        source:
-          type: tar
-          url: https://github.com/Vanilla-OS/vanilla-tools/releases/download/v1.0.0/vanilla-tools.tar.gz
-          checksum: 0e1d92d9c9154f9a115e97b40ff692afa52ddd0d9f770a8ec67440bf1a48aa72
+        sources:
+          - type: tar
+            url: https://github.com/Vanilla-OS/vanilla-tools/releases/download/v1.0.0/vanilla-tools.tar.gz
+            checksum: 0e1d92d9c9154f9a115e97b40ff692afa52ddd0d9f770a8ec67440bf1a48aa72
         commands:
           - mkdir -p /usr/bin
-          - LPKG_SRC="$(find /sources -type f -name lpkg -print -quit)"; test -n "$LPKG_SRC"; cp "$LPKG_SRC" /usr/bin/lpkg
-          - CUR_GPU_SRC="$(find /sources -type f -name cur-gpu -print -quit)"; test -n "$CUR_GPU_SRC"; cp "$CUR_GPU_SRC" /usr/bin/cur-gpu
+          - LPKG_SRC="$(find /sources/vanilla-tools -type f -name lpkg -print -quit)" && test -n "$LPKG_SRC" && cp "$LPKG_SRC" /usr/bin/lpkg
+          - CUR_GPU_SRC="$(find /sources/vanilla-tools -type f -name cur-gpu -print -quit)" && test -n "$CUR_GPU_SRC" && cp "$CUR_GPU_SRC" /usr/bin/cur-gpu
           - chmod +x /usr/bin/lpkg /usr/bin/cur-gpu
 
       - name: kde-desktop
