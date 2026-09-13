@@ -1,45 +1,63 @@
-name: install-kde-packages
+name: kde-packages
 type: apt
 sources:
   - packages:
-      # Keep the desktop set explicit: no kde-standard/kde-full metapackages.
-      # Recommends are disabled globally, so functionality we want is listed here.
+      # Plasma 6 / Wayland. Debian Plasma 6 ships plasma.desktop in plasma-workspace.
       - plasma-desktop
       - plasma-workspace
       - kwin-wayland
       - systemsettings
       - kscreen
+      - polkit-kde-agent-1
       - sddm
       - sddm-theme-breeze
       - breeze-icon-theme
       - breeze-cursor-theme
+      - breeze-gtk-theme
+      - layer-shell-qt
       - plasma-nm
       - plasma-pa
       - powerdevil
       - bluedevil
-      - dolphin
       - kio-extras
+      - udisks2
+      - upower
+      - xdg-desktop-portal
+      - xdg-desktop-portal-kde
+      - xdg-user-dirs
+      - xdg-utils
+
+      # AMD graphics: OpenGL/DRI plus RADV Vulkan.
+      - libgl1-mesa-dri
+      - mesa-vulkan-drivers
+
+      # Minimal X.Org rescue stack for the SDDM greeter only.
+      - xserver-xorg-core
+      - xserver-xorg-input-libinput
+      - dbus-x11
+
+      # Audio / network / Bluetooth / printing.
+      - pipewire
+      - pipewire-pulse
+      - pipewire-alsa
+      - wireplumber
+      - network-manager
+      - bluez
+      - cups
+
+      # Hardware target: Ryzen 5 5600U / AMD Vega + MediaTek Wi-Fi/Bluetooth.
+      - firmware-amd-graphics
+      - firmware-mediatek
+      - amd64-microcode
+
+      # Minimal base font.
+      - fonts-dejavu-core
+
+      # Minimal applications.
+      - dolphin
       - konsole
       - kate
       - okular
       - ark
-      - gwenview
       - kcalc
-      - flatpak
-      - plasma-discover
-      - plasma-discover-backend-flatpak
-      - xdg-desktop-portal
-      - xdg-desktop-portal-kde
-      - network-manager
-      - bluez
-      - pipewire
-      - pipewire-pulse
-      - wireplumber
-      - cups
-      - udisks2
-      - upower
-      - xdg-user-dirs
-      - xdg-utils
-      - fonts-noto-core
-      - fonts-noto-mono
-      - fonts-noto-color-emoji
+      - kde-spectacle
