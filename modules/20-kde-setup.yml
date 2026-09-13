@@ -8,8 +8,7 @@ commands:
   - systemctl enable cups.service
   - systemctl enable fstrim.timer
   # plasma-workspace also ships an X11 user-session entry; hide it so the only
-  # selectable Plasma session is Wayland. X.Org remains installed only as a
-  # minimal SDDM rescue stack.
+  # selectable Plasma session is Wayland. No X.Org server stack is installed.
   - rm -f /usr/share/xsessions/plasmax11.desktop
   - chmod 0755 /usr/local/bin/vanilla-kde-first-run
   - mkdir -p /etc/skel/Desktop /etc/skel/Downloads /etc/skel/Documents /etc/skel/Music /etc/skel/Pictures /etc/skel/Videos
