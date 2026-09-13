@@ -1,0 +1,46 @@
+name: Vanilla Core KDE
+id: vanilla-core-kde
+vibversion: 1.0.7
+
+stages:
+  - id: build
+    base: ghcr.io/vanilla-os/core:latest
+    addincludes: true
+    singlelayer: false
+    labels:
+      maintainer: krism-eu
+      org.opencontainers.image.title: Vanilla Core KDE
+      org.opencontainers.image.description: Vanilla OS Core with KDE Plasma
+      org.opencontainers.image.source: https://github.com/krism-eu/vanillaCoreKDE
+    args:
+      DEBIAN_FRONTEND: noninteractive
+
+    runs:
+      commands:
+        - echo 'APT::Install-Recommends "1";' > /etc/apt/apt.conf.d/01norecommends
+
+    modules:
+      - name: init-setup
+        type: shell
+        commands:
+          - lpkg --unlock
+          - apt-get update
+
+      - name: kde-desktop
+        type: includes
+        includes:
+          - modules/10-kde-packages.yml
+          - modules/20-kde-setup.yml
+
+      - name: set-image-name-abroot
+        type: includes
+        includes:
+          - modules/80-set-image-abroot-config.yml
+
+      - name: cleanup
+        type: shell
+        commands:
+          - apt-get autoremove -y
+          - apt-get clean
+          - lpkg --lock
+          - rm -rf /tmp/* /var/tmp/* /var/lib/apt/lists/*

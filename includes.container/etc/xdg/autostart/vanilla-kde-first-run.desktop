@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Vanilla Core KDE first-run setup
+Exec=/usr/local/bin/vanilla-kde-first-run
+OnlyShowIn=KDE;
+NoDisplay=true
+X-KDE-autostart-phase=1

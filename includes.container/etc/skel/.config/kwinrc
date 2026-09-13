@@ -1,0 +1,11 @@
+[Compositing]
+Backend=OpenGL
+GLCore=true
+
+[Windows]
+FocusPolicy=ClickFocus
+AutoRaise=false
+
+[org.kde.kdecoration2]
+library=org.kde.breeze
+theme=Breeze

@@ -1,0 +1,12 @@
+name: configure-kde
+type: shell
+commands:
+  - systemctl enable sddm.service
+  - systemctl set-default graphical.target
+  - systemctl enable NetworkManager.service
+  - systemctl enable bluetooth.service
+  - systemctl enable cups.service
+  - systemctl enable fstrim.timer
+  - flatpak remote-add --system --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo || true
+  - chmod 0755 /usr/local/bin/vanilla-kde-first-run
+  - mkdir -p /etc/skel/Desktop /etc/skel/Downloads /etc/skel/Documents /etc/skel/Music /etc/skel/Pictures /etc/skel/Videos

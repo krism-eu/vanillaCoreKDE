@@ -1,0 +1,5 @@
+Containerfile
+output/
+builds/
+*.iso
+*.log

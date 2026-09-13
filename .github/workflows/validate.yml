@@ -1,0 +1,23 @@
+name: Validate recipe
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Generate Containerfile
+        uses: vanilla-os/vib-gh-action@v1.0.7
+        with:
+          recipe: recipe.yml
+      - name: Sanity checks
+        run: |
+          test -s Containerfile
+          grep -q 'ghcr.io/vanilla-os/core:latest' Containerfile
+          grep -q 'kde-standard' Containerfile
+          ! grep -R --line-number 'polkit.Result.YES' .
