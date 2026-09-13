@@ -4,5 +4,5 @@ commands:
   # Vanilla Core ships a broad firmware set. Purge vendors not present on the
   # Ryzen/AMD + MediaTek target; AMD/MediaTek firmware and AMD microcode are
   # explicitly installed by modules/10-kde-packages.yml and remain manual.
-  - apt-get purge -y firmware-linux firmware-iwlwifi firmware-realtek firmware-atheros firmware-b43-installer firmware-brcm80211 firmware-sof-signed firmware-intel-graphics firmware-intel-misc firmware-nvidia-graphics intel-microcode
+  - apt-get purge -y firmware-linux firmware-iwlwifi firmware-realtek firmware-atheros firmware-ath9k-htc firmware-b43-installer firmware-brcm80211 firmware-sof-signed firmware-intel-graphics firmware-intel-misc firmware-nvidia-graphics intel-microcode
   - apt-get autoremove --purge -y
