@@ -12,20 +12,41 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Generate Containerfile
-        uses: vanilla-os/vib-gh-action@v1.0.7
+        uses: vanilla-os/vib-gh-action@v1.1.0
         with:
           recipe: recipe.yml
       - name: Sanity checks
         run: |
           test -s Containerfile
+          grep -q 'vibversion: 1.1.0' recipe.yml
           grep -q 'ghcr.io/vanilla-os/core:latest' Containerfile
           grep -q 'plasma-desktop' Containerfile
           grep -q 'APT::Install-Recommends "0"' recipe.yml
           grep -q 'APT::Install-Suggests "0"' recipe.yml
           ! grep -q 'APT::Install-Recommends "1"' recipe.yml
           ! grep -qE '(^|[[:space:]-])(kde-standard|kde-full)([[:space:]]|$)' modules/10-kde-packages.yml
-          ! grep -qE '(^|[[:space:]-])(mesa-utils|mesa-vulkan-drivers)([[:space:]]|$)' modules/10-kde-packages.yml
-          ! grep -qE '(^|[[:space:]-])firmware-' modules/10-kde-packages.yml
+
+          # Targeted graphics/firmware only: AMD Vega + MediaTek.
+          grep -qE '^[[:space:]]*- mesa-vulkan-drivers$' modules/10-kde-packages.yml
+          grep -qE '^[[:space:]]*- firmware-amd-graphics$' modules/10-kde-packages.yml
+          grep -qE '^[[:space:]]*- firmware-mediatek$' modules/10-kde-packages.yml
+          grep -qE '^[[:space:]]*- amd64-microcode$' modules/10-kde-packages.yml
+          ! grep -qE '^[[:space:]]*- (xserver-xorg|dbus-x11)' modules/10-kde-packages.yml
+          ! grep -qE '^[[:space:]]*- firmware-(iwlwifi|realtek|atheros|b43|brcm80211|sof|intel|nvidia|linux)' modules/10-kde-packages.yml
+          ! grep -qE '^[[:space:]]*- intel-microcode$' modules/10-kde-packages.yml
+
+          # Minimal multimedia: no broad bad/ugly plugin sets or ffmpeg CLI package.
+          grep -qE '^[[:space:]]*- gstreamer1.0-plugins-base$' modules/10-kde-packages.yml
+          grep -qE '^[[:space:]]*- gstreamer1.0-plugins-good$' modules/10-kde-packages.yml
+          grep -qE '^[[:space:]]*- gstreamer1.0-libav$' modules/10-kde-packages.yml
+          ! grep -qE '^[[:space:]]*- (gstreamer1.0-plugins-bad|gstreamer1.0-plugins-ugly|ffmpeg)$' modules/10-kde-packages.yml
+
+          # VIB 1.1.0 cleanup is used, while APT indexes are removed only at the end.
+          grep -q '^[[:space:]]*cleanup:$' recipe.yml
+          grep -q '/var/cache/debconf' recipe.yml
+          ! sed -n '/^[[:space:]]*cleanup:$/,/^[[:space:]]*modules:$/p' recipe.yml | grep -q '/var/lib/apt/lists'
+          grep -q 'rm -rf /var/lib/apt/lists/\*' recipe.yml
+
           test -s includes.container/usr/share/abroot/abroot.json
           python3 -m json.tool includes.container/usr/share/abroot/abroot.json >/dev/null
           grep -q '"name": "changed_automatically_by_vib"' includes.container/usr/share/abroot/abroot.json

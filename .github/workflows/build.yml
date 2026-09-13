@@ -34,7 +34,7 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Generate Containerfile with VIB
-        uses: vanilla-os/vib-gh-action@v1.0.7
+        uses: vanilla-os/vib-gh-action@v1.1.0
         with:
           recipe: recipe.yml
 
@@ -94,10 +94,19 @@ jobs:
           expected_name="${IMAGE_URL#ghcr.io/}"
           docker pull "$image"
           docker run --rm --entrypoint /bin/sh "$image" -c "
-            command -v plasmashell >/dev/null &&
-            command -v sddm >/dev/null &&
-            command -v flatpak >/dev/null &&
+            set -eu
+            command -v plasmashell >/dev/null
+            command -v sddm >/dev/null
+            command -v flatpak >/dev/null
             grep -q '\"name\": \"${expected_name}\"' /usr/share/abroot/abroot.json
+            grep -q '^LANG=it_IT.UTF-8$' /etc/default/locale
+            dpkg-query -W firmware-amd-graphics firmware-mediatek amd64-microcode mesa-vulkan-drivers gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-libav >/dev/null
+            for pkg in firmware-linux firmware-iwlwifi firmware-realtek firmware-atheros firmware-b43-installer firmware-brcm80211 firmware-sof-signed firmware-intel-graphics firmware-intel-misc firmware-nvidia-graphics intel-microcode xserver-xorg-core xserver-xorg-input-libinput dbus-x11; do
+              if dpkg-query -W -f='\${Status}' \"\$pkg\" 2>/dev/null | grep -q '^install ok installed$'; then
+                echo \"unexpected package installed: \$pkg\" >&2
+                exit 1
+              fi
+            done
           "
 
       - name: Attest image

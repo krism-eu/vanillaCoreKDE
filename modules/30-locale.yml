@@ -5,4 +5,4 @@ commands:
   - sed -i 's/^# *it_IT.UTF-8 UTF-8/it_IT.UTF-8 UTF-8/' /etc/locale.gen
   - grep -q '^it_IT.UTF-8 UTF-8$' /etc/locale.gen || echo 'it_IT.UTF-8 UTF-8' >> /etc/locale.gen
   - locale-gen it_IT.UTF-8
-  - update-locale LANG=it_IT.UTF-8
+  - printf '%s\n' 'LANG=it_IT.UTF-8' > /etc/default/locale

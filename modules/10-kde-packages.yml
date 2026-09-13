@@ -2,7 +2,7 @@ name: kde-packages
 type: apt
 sources:
   - packages:
-      # Plasma 6 / Wayland. Debian Plasma 6 ships plasma.desktop in plasma-workspace.
+      # Plasma 6 / Wayland only.
       - plasma-desktop
       - plasma-workspace
       - kwin-wayland
@@ -27,20 +27,20 @@ sources:
       - xdg-user-dirs
       - xdg-utils
 
-      # AMD graphics: OpenGL/DRI plus RADV Vulkan.
+      # AMD Vega graphics: Mesa OpenGL/DRI + RADV Vulkan.
       - libgl1-mesa-dri
       - mesa-vulkan-drivers
 
-      # Minimal X.Org rescue stack for the SDDM greeter only.
-      - xserver-xorg-core
-      - xserver-xorg-input-libinput
-      - dbus-x11
-
-      # Audio / network / Bluetooth / printing.
+      # PipeWire audio plus a deliberately small multimedia codec set.
       - pipewire
       - pipewire-pulse
       - pipewire-alsa
       - wireplumber
+      - gstreamer1.0-plugins-base
+      - gstreamer1.0-plugins-good
+      - gstreamer1.0-libav
+
+      # Network / Bluetooth / printing used on the target system.
       - network-manager
       - bluez
       - cups

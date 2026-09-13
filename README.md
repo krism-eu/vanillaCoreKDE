@@ -5,7 +5,7 @@
 
 Experimental minimal Vanilla OS image built from `ghcr.io/vanilla-os/core:latest` with KDE Plasma and SDDM.
 
-The repository follows the current Vanilla OS VIB image layout: `recipe.yml` is the source of truth, VIB generates `Containerfile`, and GitHub Actions builds/publishes the OCI image to GHCR.
+The repository uses VIB 1.1.0: `recipe.yml` is the source of truth, VIB generates `Containerfile`, and GitHub Actions builds/publishes the OCI image to GHCR.
 
 ## Image
 
@@ -17,20 +17,25 @@ ghcr.io/krism-eu/vanillacorekde:latest
 
 - Vanilla OS Core as the immutable base
 - Explicit minimal KDE Plasma desktop set; no `kde-standard` or `kde-full` metapackages
+- Plasma/SDDM Wayland profile; no X.Org rescue server packages added by this recipe
 - APT Recommends and Suggests disabled; wanted functionality is listed explicitly
-- SDDM with Wayland greeter
-- NetworkManager, Bluetooth, PipeWire and CUPS
+- AMD Vega Mesa OpenGL/DRI + RADV Vulkan support
+- Target firmware only for AMD graphics and MediaTek Wi-Fi/Bluetooth, plus AMD64 CPU microcode
+- Broad inherited Intel/NVIDIA/Realtek/Atheros/Broadcom/SOF firmware packages are purged from the final image
+- PipeWire audio with a small GStreamer codec set: base, good and libav; no broad bad/ugly plugin sets and no `ffmpeg` CLI package
+- NetworkManager, Bluetooth and CUPS
 - Flatpak + one system-wide Flathub remote
 - KDE portal integration
+- Italian `it_IT.UTF-8` system locale
 - ABRoot image-name wiring for updates from this custom GHCR image
-- no extra GPU driver/firmware packages added by this image recipe
 - conservative KDE defaults copied through `includes.container`
+- VIB 1.1.0 stage cleanup for transient caches/logs/temp data, plus final APT autoremove/purge/clean
 
 The intentionally unsafe global Polkit bypass and aggressive sysctl/limits overrides from the original prototype were removed.
 
 ## Build locally
 
-Requirements: VIB and Podman.
+Requirements: VIB 1.1.0 and Podman.
 
 ```bash
 ./build-local.sh
@@ -47,7 +52,7 @@ podman build --pull=always -f Containerfile -t localhost/vanillacorekde:dev .
 
 A push to `main` builds `linux/amd64` and publishes tags to GHCR. Pull requests build the image without pushing it. A weekly scheduled rebuild follows changes in `ghcr.io/vanilla-os/core:latest` and republishes the ABRoot `main` tag.
 
-The build is based on the official `Vanilla-OS/custom-image` VIB 1.0.7 pattern.
+Both validation and image generation use `vanilla-os/vib-gh-action@v1.1.0`. The pushed image is smoke-tested for the required AMD/MediaTek stack and fails CI if the explicitly banned firmware/X.Org packages are still installed.
 
 ## ISO status
 
@@ -65,4 +70,4 @@ build-local.sh
 
 ## Notes
 
-This is a community/custom image, not an official Vanilla OS edition. Test it in a VM before using it on real hardware.
+This is a community/custom image, not an official Vanilla OS edition. The hardware profile is intentionally narrow and targets the Ryzen 5 5600U / AMD Vega + MediaTek machine; test it before deployment.
