@@ -139,9 +139,10 @@ System Libraries, or general-purpose tools or generally available free
 programs which are used unmodified in performing those activities but
 which are not part of the work.  For example, Corresponding Source
 includes interface definition files associated with source files for
-shared libraries and dynamically linked subprograms that the work is
-specifically designed to require, such as by intimate data communication
-or control flow between those subprograms and other parts of the work.
+the work, and the source code for shared libraries and dynamically
+linked subprograms that the work is specifically designed to require,
+such as by intimate data communication or control flow between those
+subprograms and other parts of the work.
 
   The Corresponding Source need not include anything that users
 can regenerate automatically from other parts of the Corresponding
@@ -262,8 +263,8 @@ in one of these ways:
     product that is covered by this License, on a durable physical
     medium customarily used for software interchange, for a price no
     more than your reasonable cost of physically performing this
-    conveying of source, or (2) access to copy the Corresponding Source
-    from a network server at no charge.
+    conveying of source, or (2) access to copy the
+    Corresponding Source from a network server at no charge.
 
     c) Convey individual copies of the object code with a copy of the
     written offer to provide the Corresponding Source.  This
@@ -285,9 +286,9 @@ in one of these ways:
     available for as long as needed to satisfy these requirements.
 
     e) Convey the object code using peer-to-peer transmission, provided
-you inform other peers where the object code and Corresponding Source
-of the work are being offered to the general public at no charge under
-subsection 6d.
+    you inform other peers where the object code and Corresponding
+    Source of the work are being offered to the general public at no
+    charge under subsection 6d.
 
   A separable portion of the object code, whose source code is excluded
 from the Corresponding Source as a System Library, need not be
@@ -373,7 +374,7 @@ that material) supplement the terms of this License with terms:
     reasonable ways as different from the original version; or
 
     d) Limiting the use for publicity purposes of names of licensors or
-authors of the material; or
+    authors of the material; or
 
     e) Declining to grant rights under trademark law for use of some
     trade names, trademarks, or service marks; or
@@ -627,8 +628,8 @@ free software which everyone can redistribute and change under these terms.
 
   To do so, attach the following notices to the program.  It is safest
 to attach them to the start of each source file to most effectively
-state the exclusion of warranty; and each file should have at least the
-"copyright" line and a pointer to where the full notice is found.
+state the exclusion of warranty; and each file should have at least
+the "copyright" line and a pointer to where the full notice is found.
 
     <one line to give the program's name and a brief idea of what it does.>
     Copyright (C) <year>  <name of author>
