@@ -1,8 +1,9 @@
 name: hardware-prune
 type: shell
 commands:
-  # Vanilla Core ships a broad firmware set. Purge vendors not present on the
-  # Ryzen/AMD + MediaTek target; AMD/MediaTek firmware and AMD microcode are
-  # explicitly installed by modules/10-kde-packages.yml and remain manual.
-  - apt-get purge -y firmware-linux firmware-iwlwifi firmware-realtek firmware-atheros firmware-ath9k-htc firmware-b43-installer firmware-brcm80211 firmware-sof-signed firmware-intel-graphics firmware-intel-misc firmware-nvidia-graphics intel-microcode
+  # Vanilla Core ships a broad firmware set. Keep only the firmware packages
+  # required by the Ryzen/AMD + MediaTek target, regardless of what the Core
+  # base image adds in future releases.
+  - EXTRA_FIRMWARE="$(dpkg-query -W -f='${Package} ${db:Status-Status}\n' | awk '$2 == "installed" && $1 ~ /^firmware-/ && $1 != "firmware-amd-graphics" && $1 != "firmware-mediatek" {print $1}')"; if [ -n "$EXTRA_FIRMWARE" ]; then printf '%s\n' "$EXTRA_FIRMWARE"; apt-get purge -y $EXTRA_FIRMWARE; fi
+  - if [ "$(dpkg-query -W -f='${db:Status-Status}' intel-microcode 2>/dev/null || true)" = installed ]; then apt-get purge -y intel-microcode; fi
   - apt-get autoremove --purge -y
